@@ -8,6 +8,7 @@ router.get('/', function (req, res, next) {
 });
 
 router.get('/contactus', function (req, res, next) {
+  console.log(req.csrfToken());
   res.render('contactus', { title: 'Contactus', success: false, errors: {}, csrfToken: req.csrfToken() });
 });
 

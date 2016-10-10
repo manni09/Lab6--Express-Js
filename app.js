@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 var csrf = require('csurf');
 var validator = require('express-validator');
 var helmet = require('helmet');
+var session = require("express-session");
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -21,6 +22,7 @@ app.set('x-powered-by', false);
 app.disable('etag');
 app.set('strict routing', true);
 app.enable('case sensitive routing');
+app.set('trust proxy', 1) // trust first proxy
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -30,8 +32,14 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(require('less-middleware')(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(csrf({ cookie: true }));
-app.use(function (req, res, next) {
+app.use(session({
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: true }
+  }));
+app.use(csrf({cookie: true}));
+app.use(function (req, res, next) { 
   res.locals.csrftoken = req.csrfToken();
   next();
 });
